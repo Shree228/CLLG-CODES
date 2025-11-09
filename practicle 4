@@ -1,0 +1,235 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node {
+    string name;
+    int prn;
+    Node* next;
+};
+
+// Function to create a new node
+Node* createNode(int prn, string name) {
+    Node* temp = new Node;
+    temp->prn = prn;
+    temp->name = name;
+    temp->next = nullptr;
+    return temp;
+}
+
+// Function to add president (at beginning)
+void addPresident(Node*& head) {
+    int prn;
+    string name;
+    cout << "Enter PRN of President: ";
+    cin >> prn;
+    cout << "Enter Name of President: ";
+    cin >> name;
+
+    Node* temp = createNode(prn, name);
+    temp->next = head;
+    head = temp;
+    cout << "President added successfully.\n";
+}
+
+// Function to add secretary (at end)
+void addSecretary(Node*& head) {
+    int prn;
+    string name;
+    cout << "Enter PRN of Secretary: ";
+    cin >> prn;
+    cout << "Enter Name of Secretary: ";
+    cin >> name;
+
+    Node* temp = createNode(prn, name);
+    if (head == nullptr) {
+        head = temp;
+        return;
+    }
+    Node* ptr = head;
+    while (ptr->next != nullptr)
+        ptr = ptr->next;
+    ptr->next = temp;
+    cout << "Secretary added successfully.\n";
+}
+
+// Function to add a member (after president, before secretary)
+void addMember(Node*& head) {
+    int prn;
+    string name;
+    cout << "Enter PRN of Member: ";
+    cin >> prn;
+    cout << "Enter Name of Member: ";
+    cin >> name;
+
+    Node* temp = createNode(prn, name);
+    if (head == nullptr) {
+        cout << "Add a president first.\n";
+        return;
+    }
+
+    Node* ptr = head;
+    while (ptr->next != nullptr && ptr->next->next != nullptr)
+        ptr = ptr->next;
+
+    temp->next = ptr->next;
+    ptr->next = temp;
+    cout << "Member added successfully.\n";
+}
+
+// Function to delete president
+void deletePresident(Node*& head) {
+    if (head == nullptr) {
+        cout << "List is empty.\n";
+        return;
+    }
+    Node* temp = head;
+    head = head->next;
+    delete temp;
+    cout << "President deleted successfully.\n";
+}
+
+// Function to delete secretary
+void deleteSecretary(Node*& head) {
+    if (head == nullptr) {
+        cout << "List is empty.\n";
+        return;
+    }
+
+    if (head->next == nullptr) {
+        delete head;
+        head = nullptr;
+        cout << "Secretary deleted successfully.\n";
+        return;
+    }
+
+    Node* ptr = head;
+    while (ptr->next->next != nullptr)
+        ptr = ptr->next;
+
+    delete ptr->next;
+    ptr->next = nullptr;
+    cout << "Secretary deleted successfully.\n";
+}
+
+// Function to delete a member by PRN
+void deleteMember(Node*& head) {
+    if (head == nullptr) {
+        cout << "List is empty.\n";
+        return;
+    }
+
+    int prn;
+    cout << "Enter PRN of member to delete: ";
+    cin >> prn;
+
+    Node* ptr = head;
+    Node* prev = nullptr;
+
+    while (ptr != nullptr && ptr->prn != prn) {
+        prev = ptr;
+        ptr = ptr->next;
+    }
+
+    if (ptr == nullptr) {
+        cout << "Member not found.\n";
+        return;
+    }
+
+    if (prev == nullptr) // deleting head
+        head = ptr->next;
+    else
+        prev->next = ptr->next;
+
+    delete ptr;
+    cout << "Member deleted successfully.\n";
+}
+
+// Function to display list
+void display(Node* head) {
+    if (head == nullptr) {
+        cout << "List is empty.\n";
+        return;
+    }
+
+    Node* ptr = head;
+    cout << "\nClub Members:\n";
+    cout << "-----------------------------------\n";
+    while (ptr != nullptr) {
+        cout << "PRN: " << ptr->prn << " | Name: " << ptr->name << endl;
+        ptr = ptr->next;
+    }
+    cout << "-----------------------------------\n";
+}
+
+// Function to count total members
+int countMembers(Node* head) {
+    int count = 0;
+    while (head != nullptr) {
+        count++;
+        head = head->next;
+    }
+    return count;
+}
+
+// Function to concatenate two linked lists
+Node* concatenate(Node* list1, Node* list2) {
+    if (list1 == nullptr)
+        return list2;
+    Node* ptr = list1;
+    while (ptr->next != nullptr)
+        ptr = ptr->next;
+    ptr->next = list2;
+    return list1;
+}
+
+int main() {
+    Node* divA = nullptr;
+    Node* divB = nullptr;
+    Node* merged = nullptr;
+    int choice;
+
+    do {
+        cout << "\n=== CLUB MENU ===\n";
+        cout << "1. Add President\n";
+        cout << "2. Add Member\n";
+        cout << "3. Add Secretary\n";
+        cout << "4. Delete President\n";
+        cout << "5. Delete Member\n";
+        cout << "6. Delete Secretary\n";
+        cout << "7. Display Members\n";
+        cout << "8. Count Members\n";
+        cout << "9. Create Second Division List\n";
+        cout << "10. Concatenate Two Lists\n";
+        cout << "11. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: addPresident(divA); break;
+            case 2: addMember(divA); break;
+            case 3: addSecretary(divA); break;
+            case 4: deletePresident(divA); break;
+            case 5: deleteMember(divA); break;
+            case 6: deleteSecretary(divA); break;
+            case 7: display(divA); break;
+            case 8: cout << "Total Members: " << countMembers(divA) << endl; break;
+            case 9:
+                cout << "Creating Division B List...\n";
+                addPresident(divB);
+                addMember(divB);
+                addSecretary(divB);
+                break;
+            case 10:
+                merged = concatenate(divA, divB);
+                cout << "Lists concatenated successfully.\n";
+                display(merged);
+                break;
+            case 11: cout << "Exiting...\n"; break;
+            default: cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 11);
+
+    return 0;
+}
