@@ -1,0 +1,156 @@
+#include <iostream>
+using namespace std;
+
+// Node structure
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+};
+
+// Function to create a new node
+Node* newNode(int value) {
+    Node* temp = new Node();
+    temp->data = value;
+    temp->left = temp->right = nullptr;
+    return temp;
+}
+
+// Function to insert a new node in BST
+Node* insert(Node* root, int value) {
+    if (root == nullptr)
+        return newNode(value);
+
+    if (value < root->data)
+        root->left = insert(root->left, value);
+    else if (value > root->data)
+        root->right = insert(root->right, value);
+
+    return root;
+}
+
+// Function to find the height (longest path from root)
+int longestPath(Node* root) {
+    if (root == nullptr)
+        return 0;
+    int leftHeight = longestPath(root->left);
+    int rightHeight = longestPath(root->right);
+    return max(leftHeight, rightHeight) + 1;
+}
+
+// Function to find minimum value in the BST
+int findMin(Node* root) {
+    if (root == nullptr) {
+        cout << "Tree is empty.\n";
+        return -1;
+    }
+    while (root->left != nullptr)
+        root = root->left;
+    return root->data;
+}
+
+// Function to swap left and right pointers at every node (mirror)
+void mirrorTree(Node* root) {
+    if (root == nullptr)
+        return;
+    mirrorTree(root->left);
+    mirrorTree(root->right);
+
+    Node* temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+}
+
+// Function to search a value in BST
+bool search(Node* root, int key) {
+    if (root == nullptr)
+        return false;
+    if (root->data == key)
+        return true;
+    else if (key < root->data)
+        return search(root->left, key);
+    else
+        return search(root->right, key);
+}
+
+// Inorder traversal to display tree elements
+void inorder(Node* root) {
+    if (root == nullptr)
+        return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+int main() {
+    Node* root = nullptr;
+    int n, value;
+
+    cout << "Enter number of nodes to insert initially: ";
+    cin >> n;
+    cout << "Enter values: ";
+    for (int i = 0; i < n; i++) {
+        cin >> value;
+        root = insert(root, value);
+    }
+
+    int choice;
+    do {
+        cout << "\n\n--- MENU ---\n";
+        cout << "1. Insert new node\n";
+        cout << "2. Find number of nodes in longest path from root\n";
+        cout << "3. Find minimum data value in tree\n";
+        cout << "4. Mirror the tree (swap left and right)\n";
+        cout << "5. Search a value\n";
+        cout << "6. Display tree (Inorder)\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                root = insert(root, value);
+                break;
+
+            case 2:
+                cout << "Longest path (height) = " << longestPath(root) << endl;
+                break;
+
+            case 3:
+                cout << "Minimum value = " << findMin(root) << endl;
+                break;
+
+            case 4:
+                mirrorTree(root);
+                cout << "Tree mirrored successfully.\n";
+                break;
+
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> value;
+                if (search(root, value))
+                    cout << "Value found in tree.\n";
+                else
+                    cout << "Value not found.\n";
+                break;
+
+            case 6:
+                cout << "Inorder traversal: ";
+                inorder(root);
+                cout << endl;
+                break;
+
+            case 7:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid choice.\n";
+        }
+
+    } while (choice != 7);
+
+    return 0;
+}
