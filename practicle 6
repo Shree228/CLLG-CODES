@@ -1,0 +1,44 @@
+#include <iostream>
+#include <stack>
+using namespace std;
+
+// Function to check if brackets are matching pair
+bool isMatchingPair(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '{' && close == '}') ||
+           (open == '[' && close == ']');
+}
+
+// Function to check if expression is well parenthesized
+bool isWellParenthesized(string expr) {
+    stack<char> s;
+
+    for (char ch : expr) {
+        // If opening bracket, push to stack
+        if (ch == '(' || ch == '{' || ch == '[') {
+            s.push(ch);
+        }
+        // If closing bracket, check for matching pair
+        else if (ch == ')' || ch == '}' || ch == ']') {
+            if (s.empty() || !isMatchingPair(s.top(), ch))
+                return false;
+            s.pop(); // pop the matching opening bracket
+        }
+    }
+
+    // If stack is empty, all brackets were matched
+    return s.empty();
+}
+
+int main() {
+    string expr;
+    cout << "Enter an expression: ";
+    cin >> expr;
+
+    if (isWellParenthesized(expr))
+        cout << "Expression is well parenthesized.\n";
+    else
+        cout << "Expression is NOT well parenthesized.\n";
+
+    return 0;
+}
