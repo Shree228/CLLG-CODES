@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Graph {
+    int n; // number of cities (nodes)
+    vector<string> cities;
+    vector<vector<int>> adjMatrix; // adjacency matrix (stores cost or time)
+
+public:
+    // Constructor
+    Graph(int num) {
+        n = num;
+        adjMatrix.resize(n, vector<int>(n, 0));
+        cities.resize(n);
+    }
+
+    // Input city names
+    void inputCities() {
+        cout << "\nEnter names of " << n << " cities:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "City " << i + 1 << ": ";
+            cin >> cities[i];
+        }
+    }
+
+    // Add edge (flight path)
+    void addEdge() {
+        int u, v, cost;
+        cout << "\nEnter the number of flight connections: ";
+        int edges;
+        cin >> edges;
+
+        for (int i = 0; i < edges; i++) {
+            cout << "\nEnter source city index (1-" << n << "): ";
+            cin >> u;
+            cout << "Enter destination city index (1-" << n << "): ";
+            cin >> v;
+            cout << "Enter flight cost or time: ";
+            cin >> cost;
+
+            // Undirected graph: flights both ways
+            adjMatrix[u - 1][v - 1] = cost;
+            adjMatrix[v - 1][u - 1] = cost;
+        }
+    }
+
+    // Display adjacency matrix
+    void displayMatrix() {
+        cout << "\nAdjacency Matrix (Flight Costs):\n    ";
+        for (int i = 0; i < n; i++)
+            cout << cities[i] << "\t";
+        cout << "\n--------------------------------------------------\n";
+        for (int i = 0; i < n; i++) {
+            cout << cities[i] << " | ";
+            for (int j = 0; j < n; j++) {
+                cout << adjMatrix[i][j] << "\t";
+            }
+            cout << endl;
+        }
+    }
+
+    // DFS helper function to check connectivity
+    void DFS(int v, vector<bool>& visited) {
+        visited[v] = true;
+        for (int i = 0; i < n; i++) {
+            if (adjMatrix[v][i] != 0 && !visited[i])
+                DFS(i, visited);
+        }
+    }
+
+    // Check if graph is connected
+    void checkConnected() {
+        vector<bool> visited(n, false);
+        DFS(0, visited); // start DFS from first city
+
+        bool connected = true;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                connected = false;
+                break;
+            }
+        }
+
+        if (connected)
+            cout << "\n✅ The flight network is CONNECTED (you can reach every city).\n";
+        else
+            cout << "\n❌ The flight network is NOT CONNECTED (some cities are unreachable).\n";
+    }
+};
+
+// Main function
+int main() {
+    int n;
+    cout << "Enter number of cities: ";
+    cin >> n;
+
+    Graph g(n);
+    g.inputCities();
+    g.addEdge();
+
+    int choice;
+    do {
+        cout << "\n====== FLIGHT NETWORK MENU ======\n";
+        cout << "1. Display Adjacency Matrix\n";
+        cout << "2. Check if Network is Connected\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                g.displayMatrix();
+                break;
+            case 2:
+                g.checkConnected();
+                break;
+            case 3:
+                cout << "✈️ Exiting... Safe travels!\n";
+                break;
+            default:
+                cout << "❌ Invalid choice! Try again.\n";
+        }
+    } while (choice != 3);
+
+    return 0;
+}
